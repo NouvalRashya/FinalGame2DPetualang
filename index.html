@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Guru - Game Petualang V2.0</title>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --qz-purple: #8854c0;
+            --qz-dark: #6d3f99;
+            --qz-black: #2d0d4d;
+            --color-a: #2d70ae;
+            --color-b: #26890c;
+            --color-c: #ff9800;
+            --color-kunci: #d4546a;
+            --color-share: #00bcd4;
+        }
+
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: linear-gradient(125deg, #461a92 0%, #6d3f99 40%, #2d0d4d 100%); 
+            background-attachment: fixed; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 0; 
+            margin: 0; 
+            overflow-x: hidden; 
+        }
+
+        .container { width: 95%; max-width: 1100px; animation: slideUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(40px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .main-card { 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 30px; 
+            border-radius: 24px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+        }
+
+        .header-area { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid #eee; 
+            padding-bottom: 15px; 
+        }
+
+        .header-area h1 { color: var(--qz-purple); font-weight: 800; margin: 0; font-size: 24px; letter-spacing: -1px; }
+        .header-area .badge { background: var(--qz-purple); color: white; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 700; }
+
+        .editor-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; }
+        .config-panel { background: #f8f9fe; padding: 20px; border-radius: 18px; border: 1px solid #e0e0e0; }
+        .content-panel { background: #ffffff; padding: 25px; border-radius: 18px; border: 2px solid #f0f0f0; }
+
+        .section-label { font-size: 11px; font-weight: 800; color: #aaa; text-transform: uppercase; margin-bottom: 15px; display: block; }
+        .form-group { margin-bottom: 18px; position: relative; }
+        label { display: block; margin-bottom: 6px; font-weight: 700; color: #444; font-size: 13px; }
+
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid #ddd; 
+            border-radius: 12px; 
+            font-family: inherit; 
+            font-size: 14px; 
+            transition: 0.3s; 
+            box-sizing: border-box; 
+        }
+
+        textarea { height: 160px; resize: none; border: 2px dashed #ccc; background: #fafafa; }
+
+        .char-counter {
+            font-size: 11px;
+            color: #888;
+            position: absolute;
+            right: 5px;
+            bottom: -18px;
+        }
+
+        .info-pos {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--color-kunci);
+            margin-top: 6px;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .info-aturan {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--color-c);
+            margin-top: 6px;
+            display: block;
+            line-height: 1.4;
+        }
+
+        .choices-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .choice-item { padding: 15px; border-radius: 15px; color: white; transition: transform 0.2s; position: relative; padding-bottom: 25px; }
+        .choice-item label { color: rgba(255,255,255,0.9); font-size: 11px; margin-bottom: 10px; }
+        .choice-item input { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; }
+        .choice-item input::placeholder { color: rgba(255, 255, 255, 0.6); }
+        .choice-item .char-counter { color: rgba(255,255,255,0.7); right: 15px; bottom: 5px; }
+
+        .bg-a { background: var(--color-a); box-shadow: 0 6px 0 #1e5281; }
+        .bg-b { background: var(--color-b); box-shadow: 0 6px 0 #1a5e08; }
+        .bg-c { background: var(--color-c); box-shadow: 0 6px 0 #c77700; }
+        .bg-k { background: var(--color-kunci); box-shadow: 0 6px 0 #a33b4d; padding-bottom: 15px; }
+        .kunci-select { background: white !important; color: #333 !important; }
+
+        .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        
+        button { 
+            width: 100%;
+            background-color: var(--qz-purple); 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            border-radius: 15px; 
+            font-size: 16px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            box-shadow: 0 6px 0 var(--qz-dark); 
+            transition: 0.1s; 
+            text-transform: uppercase; 
+        }
+
+        button:hover { filter: brightness(1.1); }
+        button:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--qz-dark); }
+        
+        .btn-nilai { background: #26890c; box-shadow: 0 6px 0 #1a5e08; }
+        .btn-hapus { background-color: #d4546a; box-shadow: 4px 0 #a33b4d; padding: 8px; font-size: 12px; height: auto; width: auto; }
+        
+        .btn-share { 
+            background: var(--color-share); 
+            box-shadow: 0 6px 0 #0097a7; 
+            display: none; 
+            animation: bounceIn 0.5s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; padding: 10px; border-bottom: 2px solid #eee; font-size: 12px; color: #888; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; color: #333; }
+
+        @media (max-width: 850px) { 
+            .editor-grid { grid-template-columns: 1fr; } 
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-card">
+        <div class="header-area">
+            <h1>CMS GURU <span style="font-weight:400; color:#888;">| Editor Mode</span></h1>
+            <div class="badge">GAME PETUALANG V2.0</div>
+        </div>
+
+        <div class="editor-grid">
+            <div class="config-panel">
+                <span class="section-label">1. Konfigurasi Target</span>
+                <div class="form-group">
+                    <label>PILIH LEVEL / SCENE</label>
+                    <select id="pilihScene" onchange="toggleForm()">
+                        <optgroup label="MODUL MATERI">
+                            <option value="Materi_level1">📘 Winter (Materi 1)</option>
+                            <option value="Materi_level2">📘 Green Forest (Materi 2)</option>
+                            <option value="Materi_level3">📘 Halloween (Materi 3)</option>
+                            <option value="Materi_level4">📘 Jungle (Materi 4)</option>
+                            <option value="Materi_level5">📘 Desert (Materi 5)</option>
+                        </optgroup>
+                        <optgroup label="BANK SOAL">
+                            <option value="soal_level1">📝 Winter (Soal 1)</option>
+                            <option value="soal_level2">📝 Green Forest (Soal 2)</option>
+                            <option value="soal_level3">📝 Halloween (Soal 3)</option>
+                            <option value="soal_level4">📝 Jungle (Soal 4)</option>
+                            <option value="soal_level5">📝 Desert (Soal 5)</option>
+                        </optgroup>
+                    </select>
+                    <span class="info-aturan">💡 PENTING: Pengisi wajib memilih tema yang SAMA antara bagian Modul Materi dan Bank Soal (Misal: Winter Materi 1 & Winter Soal 1).</span>
+                </div>
+                <div class="form-group">
+                    <label>NOMOR URUT POS (1-10)</label>
+                    <input type="number" id="noUrut" min="1" max="10" value="1">
+                    <span class="info-pos">⚠️ UNTUK MENDAPATKAN LINK GAME, POS WAJIB DI ISI SAMPAI = 10</span>
+                </div>
+                <div class="actions">
+                    <button onclick="simpanKeFirebase()" id="btnSimpan">SIMPAN DATA</button>
+                    <button onclick="bagikanLink()" id="btnBagikan" class="btn-share">📢 BAGIKAN LINK GAME</button>
+                    <button onclick="bukaNilai()" class="btn-nilai">LIHAT NILAI SISWA</button>
+                </div>
+            </div>
+
+            <div class="content-panel">
+                <span class="section-label" id="judulKonten">2. Editor Materi</span>
+                
+                <div id="formMateri">
+                    <div class="form-group">
+                        <label>NARASI MATERI PELAJARAN (MAKSIMAL 200 KARAKTER)</label>
+                        <textarea id="isiMateri" maxlength="200" placeholder="Ketikkan materi pembelajaran di sini..."></textarea>
+                        <span id="charCounter" class="char-counter">0 / 200 Karakter</span>
+                    </div>
+                </div>
+
+                <div id="formKuis" style="display:none;">
+                    <div class="form-group">
+                        <label>PERTANYAAN KUIS (MAKSIMAL 200 KARAKTER)</label>
+                        <input type="text" id="tanya" maxlength="200" placeholder="Ketik pertanyaan...">
+                        <span id="charCounterTanya" class="char-counter">0 / 200 Karakter</span>
+                    </div>
+                    <div class="choices-container">
+                        <div class="choice-item bg-a">
+                            <label>PILIH A (MAKSIMAL 50 CHAR)</label>
+                            <input type="text" id="a" maxlength="50" placeholder="Jawaban A">
+                            <span id="charCounterA" class="char-counter">0 / 50 Char</span>
+                        </div>
+                        <div class="choice-item bg-b">
+                            <label>PILIH B (MAKSIMAL 50 CHAR)</label>
+                            <input type="text" id="b" maxlength="50" placeholder="Jawaban B">
+                            <span id="charCounterB" class="char-counter">0 / 50 Char</span>
+                        </div>
+                        <div class="choice-item bg-c">
+                            <label>PILIH C (MAKSIMAL 50 CHAR)</label>
+                            <input type="text" id="c" maxlength="50" placeholder="Jawaban C">
+                            <span id="charCounterC" class="char-counter">0 / 50 Char</span>
+                        </div>
+                        <div class="choice-item bg-k">
+                            <label>KUNCI JAWABAN</label>
+                            <select id="kunci" class="kunci-select">
+                                <option value="A">Opsi A</option>
+                                <option value="B">Opsi B</option>
+                                <option value="C">Opsi C</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panelNilai" style="display:none; margin-top:20px; border-top:2px solid #eee; padding-top:20px;">
+                    <h3 style="color:var(--qz-purple); margin-top:0;">DATA NILAI TERBARU</h3>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Kelas</th>
+                                    <th>Skor</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataNilai"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const baseUrl = "https://gamepetualang-2ac94-default-rtdb.asia-southeast1.firebasedatabase.app";
+    const linkGameItch = "https://2dpetualang.itch.io/codingadventureev20"; 
+
+    const textareaMateri = document.getElementById('isiMateri');
+    const charCounter = document.getElementById('charCounter');
+    const btnBagikan = document.getElementById('btnBagikan');
+
+    // Kuis Elements & Counters
+    const inputTanya = document.getElementById('tanya');
+    const inputA = document.getElementById('a');
+    const inputB = document.getElementById('b');
+    const inputC = document.getElementById('c');
+
+    const counterTanya = document.getElementById('charCounterTanya');
+    const counterA = document.getElementById('charCounterA');
+    const counterB = document.getElementById('charCounterB');
+    const counterC = document.getElementById('charCounterC');
+
+    // Listener Karakter - Materi
+    textareaMateri.addEventListener('input', function() {
+        charCounter.innerText = `${this.value.length} / 200 Karakter`;
+    });
+
+    // Listener Karakter - Kuis
+    inputTanya.addEventListener('input', function() {
+        counterTanya.innerText = `${this.value.length} / 200 Karakter`;
+    });
+    inputA.addEventListener('input', function() {
+        counterA.innerText = `${this.value.length} / 50 Char`;
+    });
+    inputB.addEventListener('input', function() {
+        counterB.innerText = `${this.value.length} / 50 Char`;
+    });
+    inputC.addEventListener('input', function() {
+        counterC.innerText = `${this.value.length} / 50 Char`;
+    });
+
+    // Fungsi Ganti Mode Editor
+    function toggleForm() {
+        const pilihan = document.getElementById('pilihScene').value;
+        const fMateri = document.getElementById('formMateri');
+        const fKuis = document.getElementById('formKuis');
+        const judul = document.getElementById('judulKonten');
+        const btn = document.getElementById('btnSimpan');
+        
+        btnBagikan.style.display = "none";
+
+        if (pilihan.toLowerCase().includes("materi")) {
+            fMateri.style.display = "block";
+            fKuis.style.display = "none";
+            judul.innerText = "2. Editor Materi";
+            btn.innerText = "SIMPAN MATERI";
+        } else {
+            fMateri.style.display = "none";
+            fKuis.style.display = "block";
+            judul.innerText = "2. Editor Kuis";
+            btn.innerText = "SIMPAN SOAL";
+        }
+    }
+
+    // Fungsi Utama Simpan
+    async function simpanKeFirebase() {
+        const scene = document.getElementById('pilihScene').value;
+        const inputId = parseInt(document.getElementById('noUrut').value);
+        const firebaseId = inputId - 1; 
+        const btn = document.getElementById('btnSimpan');
+
+        let data = {};
+        if (scene.toLowerCase().includes("materi")) {
+            const teksMateri = textareaMateri.value.trim();
+            if (!teksMateri) return Swal.fire('Peringatan', 'Materi kosong!', 'warning');
+            data = { isi: teksMateri };
+        } else {
+            const tanya = inputTanya.value.trim();
+            const a = inputA.value.trim();
+            const b = inputB.value.trim();
+            const c = inputC.value.trim();
+            const kunci = document.getElementById('kunci').value;
+
+            if (!tanya || !a || !b || !c) {
+                return Swal.fire('Peringatan', 'Semua kolom kuis wajib diisi!', 'warning');
+            }
+
+            data = { pertanyaan: tanya, opsiA: a, opsiB: b, opsiC: c, jawaban: kunci };
+        }
+
+        btn.innerText = "MEMPROSES...";
+        btn.disabled = true;
+
+        try {
+            const cleanBase = baseUrl.replace(/\/$/, "");
+            const finalUrl = `${cleanBase}/soal/${scene}/${firebaseId}.json`;
+            const response = await fetch(finalUrl, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', timer: 1000, showConfirmButton: false });
+                
+                if (inputId === 10) {
+                    btnBagikan.style.display = "block";
+                }
+
+                // Reset Form & Penghitung Karakter setelah berhasil disimpan
+                if (scene.toLowerCase().includes("materi")) {
+                    textareaMateri.value = "";
+                    charCounter.innerText = "0 / 200 Karakter";
+                } else {
+                    inputTanya.value = "";
+                    inputA.value = "";
+                    inputB.value = "";
+                    inputC.value = "";
+                    counterTanya.innerText = "0 / 200 Karakter";
+                    counterA.innerText = "0 / 50 Char";
+                    counterB.innerText = "0 / 50 Char";
+                    counterC.innerText = "0 / 50 Char";
+                }
+
+                if (inputId < 10) document.getElementById('noUrut').value = inputId + 1;
+            }
+        } catch (error) {
+            Swal.fire('Gagal!', 'Cek koneksi internet.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = scene.toLowerCase().includes("materi") ? "SIMPAN MATERI" : "SIMPAN SOAL";
+        }
+    }
+
+    // Fungsi Salin Link Clipboard
+    function bagikanLink() {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(linkGameItch).then(() => {
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: 'Link Disalin!', 
+                    text: 'Link game berhasil disalin ke clipboard. Silakan bagikan ke grup siswa.',
+                    confirmButtonColor: '#8854c0'
+                });
+            }).catch(err => {
+                Swal.fire('Error', 'Gagal menyalin link.', 'error');
+            });
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = linkGameItch;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            Swal.fire('Berhasil!', 'Link disalin.', 'success');
+        }
+    }
+
+    async function bukaNilai() {
+        const panel = document.getElementById('panelNilai');
+        const dataNilai = document.getElementById('dataNilai');
+        try {
+            const res = await fetch(`${baseUrl.replace(/\/$/, "")}/skor.json`);
+            const data = await res.json();
+            dataNilai.innerHTML = "";
+            if (!data) {
+                dataNilai.innerHTML = "<tr><td colspan='4'>Belum ada data nilai.</td></tr>";
+            } else {
+                for (let key in data) {
+                    let s = data[key];
+                    dataNilai.innerHTML += `<tr>
+                        <td>${s.nama || 'Anonim'}</td>
+                        <td>${s.kelas || '-'}</td>
+                        <td><strong>${s.skor || 0}</strong></td>
+                        <td><button class="btn-hapus" onclick="hapusData('${key}')">HAPUS</button></td>
+                    </tr>`;
+                }
+            }
+            panel.style.display = "block";
+            panel.scrollIntoView({ behavior: 'smooth' });
+        } catch (e) { Swal.fire('Error', 'Gagal mengambil data.', 'error'); }
+    }
+
+    toggleForm();
+</script>
+</body>
+</html>
